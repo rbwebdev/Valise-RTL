@@ -12,17 +12,6 @@
   $startTitleText = '<h2>';
   $endTitleText = '</h2>';
   $xml = simplexml_load_file($url);
-  foreach ($xml->channel->item as $item){
-      $content = file_get_contents($item->link, null, stream_context_create($context));
-      $date = date("d/m/Y à h:i:s", strtotime($item->pubDate));
-      break;
-  }
-  $startTitle = strpos($content,$startTitleText);
-  $endTitle = strpos($content,$endTitleText);
-  $title = strip_tags(substr($content, $startTitle, ($endTitle - $startTitle + strlen($endTitleText))));
-  $startList = strpos($content,$startListText);
-  $endList = strpos($content,$endListText);
-  $list = substr($content, $startList, ($endList - $startList + strlen($endListText)));
 ?>
 <!doctype html>
 <html lang="fr">
@@ -35,12 +24,45 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 		<meta name="robots" content="noindex, nofollow">
-		<title>Valise</title>
+		<title>Valise RTL</title>
 	</head>
 	<body>
 		<div class="container">
-			<h2><?= $title ?><br><small><?= $date ?></small></h2>
-			<?= $list ?>
+            <?php
+                $found = false;
+                foreach ($xml->channel->item as $item){
+                    $content = file_get_contents($item->link, null, stream_context_create($context));
+                    if (strpos($content,$startListText) !== false)  {
+                        $found = true;
+                    } else {
+                        continue;
+                    }
+                    $date = date("d/m/Y à h:i:s", strtotime($item->pubDate));
+                    $startTitle = strpos($content,$startTitleText);
+                    $endTitle = strpos($content,$endTitleText);
+                    $title = strip_tags(substr($content, $startTitle, ($endTitle - $startTitle + strlen($endTitleText))));
+                    $startList = strpos($content,$startListText);
+                    $endList = strpos($content,$endListText);
+                    $list = substr($content, $startList, ($endList - $startList + strlen($endListText)));
+                    $tmpList = explode('</li>',str_replace(['<ol>','</ol>','<li>'],'',$list));
+                    $price = str_replace([' ',',','.','€','&euro;'],'',$tmpList[0]);
+                    if (!is_numeric($price)) {
+                        $found = false;
+                    }
+                    if ($found) {
+                        ?>
+                            <h2 class="text-center"><?= $title ?><br><small><?= $date ?></small></h2>
+                            <hr>
+                            <?= str_replace(['<ol>','</ol>'],['<ul>','</ul>'],$list) ?>
+                        <?php
+                        break;
+                    }
+                }
+            ?>
+            <hr>
+            <div class="text-center">
+                <a href="https://valisertl.com" target="_blank" class="btn btn-info">Sources : https://valisertl.com</a>
+            </div>
 		</div>
 	</body>
 </html>
