@@ -44,8 +44,8 @@
                     $startList = strpos($content,$startListText);
                     $endList = strpos($content,$endListText);
                     $list = substr($content, $startList, ($endList - $startList + strlen($endListText)));
-                    $tmpList = explode('</li>',str_replace(['<ol>','</ol>','<li>'],'',$list));
-                    $price = str_replace([' ',',','.','€','&euro;'],'',$tmpList[0]);
+                    $listArray = explode('</li>',str_replace(['<ol>','</ol>','<li>'],'',$list));
+                    $price = str_replace([' ',',','.','€','&euro;'],'',$listArray[0]);
                     if (!is_numeric($price)) {
                         $found = false;
                     }
@@ -53,7 +53,17 @@
                         ?>
                             <h2 class="text-center"><?= $title ?><br><small><?= $date ?></small></h2>
                             <hr>
-                            <?= str_replace(['<ol>','</ol>'],['<ul>','</ul>'],$list) ?>
+                            <ul class="list-group">
+                            <?php
+                                foreach ($listArray as $item) {
+                                    if ($item != '') {
+                                        ?>
+                                        <li class="list-group-item"><?= $item ?></li>
+                                        <?php
+                                    }
+                                }
+                            ?>
+                            </ul>
                         <?php
                         break;
                     }
