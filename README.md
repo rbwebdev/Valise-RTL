@@ -1,4 +1,4 @@
-## RTL suitcase
-Content of the RTL case based on the RSS feed of [valisertl.com](http://valisertl.com). History of always having it at hand.
+## Valise RTL
+Contenu de la valise RTL basé sur le flux RSS de [valisertl.com](http://valisertl.com). Histoire de toujours l'avoir sous la main.
 
-[Consult](http://rbwebdev.ovh/valise/)
+[Consulter le contenu de la valise](http://rbwebdev.ovh/valise/)
